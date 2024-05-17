@@ -4,27 +4,27 @@
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-void Delayullah(uint32_t t)
+void Delayullah(uint32_t t)	// runtime based counter function
 {
     while (t--);
 }
 
 void GPIO_Config(void)
 {
-	/*   ÖNEMLÝ NOT!!!!
-	    	Yerleþik ledler D portunda, 12-13-14-15. pinlerde bulunuyor
-	    	User button A portunda, 0 pininde bulunuyor
+	/*   IMPORTANT !!
+	    	Built-in LEDs are in Port D, at pins 12-13-14-15.
+	    	User button is in Port A, at pin 0.
 	 */
 
 
 	//  LED part
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);   // D portu enable ediliyor
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);   // Port D enabled
 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_14;   // 12 ve 14. pinlerini seçiyorum
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;   // output olarak ayarlýyorum
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // pupd seçip pull down yapýcaz, od yaparsak düz topraða akar led yanmaz
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_14;   // Initializing pins 12 and 14
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;   // pins 12 and 14 are now output
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // pulldown resistor mode
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   // çalýþma frekansý 50 MHz
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   // frequency 50 MHz
 	GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 
@@ -32,9 +32,9 @@ void GPIO_Config(void)
 	// BUTTON part
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;   // button PA0'da
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;   // buttonu input olarak alýyoruz
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // built-in olarak pull-down direnç var
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;   // push button is at PA0
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;   // button is initialized as input
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // pull-down resistor for push-button
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
@@ -44,10 +44,15 @@ int state = 0;
 int main(void)
 {
 	GPIO_Config();
-	GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
+	GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);	// LEDs start in off state
 
 
-
+	/*
+	- Loop below works through 4 different states
+ 	- Each state lights up the LEDS in different configuration and time length
+  	- States changed via built-in push button input
+ 	*/
+	
 	while (1)
 	{
 		if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)==1)
