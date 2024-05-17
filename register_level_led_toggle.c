@@ -53,7 +53,6 @@ void Delayullah(uint32_t t)	// this is a runtime based counter (excuse the name)
 }
 
 
-
 int main(void)
 {
 	RCC_Config();
@@ -84,52 +83,11 @@ int main(void)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
  *
  *
 
  * */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
