@@ -8,7 +8,7 @@ void RCC_Config(void)
 
 	// 1. Enabling HSE
 	RCC->CR |= 1<<16;   // HSEEN=1
-	while (!(RCC->CR & (1<<17)));   // HSE ready flag'inin HIGH olmasýný bekliyoruz
+	while (!(RCC->CR & (1<<17)));   // Waiting until HSE ready flag is HIGH
 
 	// 2. Enabling Peripheral Power and Voltage Regulator
 	RCC->APB1ENR |= 1<<28;   // PWREN=1
@@ -41,13 +41,13 @@ void GPIOConfig (void)
 {
 	RCC->AHB1ENR |=1<<3 | 1<<0;   // GPIOD ve GPIOA enabled
 
-	GPIOD->MODER |= 85<<24;   // 24. pinden itibaren 0101 0101 olucak ve 12, 13, 14, 15. pinler output olucak
-	//*** GPIOD OTYPER registerýna ellemiyorum reset state'de push-pull'da dursun
-	GPIOD->OSPEEDR = 4278190080;   // 24'ten 31. bite kadar 1 yapýp pinleri veri high speed seçtim
-	//*** GPIOD PUPDR registerina da ellemiyorum
+	GPIOD->MODER |= 85<<24;   // pin states will be 01010101 starting from pin 24, and the pins 12, 13, 14, 15 will be output
+	//*** GPIOD OTYPER is left untouched at reset state (push-pull)
+	GPIOD->OSPEEDR = 4278190080;   // pins from 24 to 31 are set HIGH to function as "very high speed"
+	//*** GPIOD PUPDR register is also untouched
 }
 
-void Delayullah(uint32_t t)
+void Delayullah(uint32_t t)	// this is a runtime based counter (excuse the name)
 {
 	while(t--);
 }
@@ -67,7 +67,7 @@ int main(void)
 			while
 		}
 
-		/*    ODR registerýyla yapýlan hali
+		/*    same operation but with ODR register;
 		GPIOD->ODR |= 1<<12 | 1<<13 | 1<<14 | 1<<15;
 		Delayullah(4000000);
 		GPIOD->ODR &= ~(1<<12);
