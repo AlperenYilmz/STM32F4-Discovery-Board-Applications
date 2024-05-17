@@ -6,30 +6,29 @@ GPIO_InitTypeDef GPIO_InitStruct;
 
 void GPIO_Config(void)
 {
-	/*   ÖNEMLÝ NOT!!!!
-	    	Yerleþik ledler D portunda, 12-13-14-15. pinlerde bulunuyor
-	    	User button A portunda, 0 pininde bulunuyor
+	/*   IMPORTANT !!
+	    	Built-in LEDs are in Port D, at pins 12-13-14-15.
+	    	User button is in Port A, at pin 0.
 	 */
 
 
 	//  LED part
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);   // D portu enable ediliyor
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);   // Port D is enabled
 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_15;   // 12 ve 14. pinlerini seçiyorum ****
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;   // output olarak ayarlýyorum
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // pupd seçip pull down yapýcaz, od yaparsak düz topraða akar led yanmaz
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_15;   // pins 12 and 14 are initialized
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;   // pins 12 and 14 are output
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // outputs are pulled down
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_25MHz;   // çalýþma frekansý 50 MHz
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_25MHz;   // frequency is 50 MHz
 	GPIO_Init(GPIOD, &GPIO_InitStruct);
-
 
 
 	// BUTTON part
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;   // button PA0'da
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;   // buttonu input olarak alýyoruz
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // built-in olarak pull-down direnç var
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;   // user button is at PA0 pin
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;   // button as input
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // button is pulled down when not pressed
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
@@ -42,6 +41,8 @@ int main(void)
 	GPIO_Config();
 	GPIO_ResetBits(GPIOD, GPIO_Pin_13 | GPIO_Pin_15);
 
+
+	// Different from the other LED code, this keeps LEDs lit until button is released
 	while(1)
 	{
 		GPIO_ResetBits(GPIOD, GPIO_Pin_13 | GPIO_Pin_15);
@@ -53,32 +54,7 @@ int main(void)
 
 	}
 
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
