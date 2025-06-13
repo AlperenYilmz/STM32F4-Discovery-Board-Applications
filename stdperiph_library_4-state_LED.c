@@ -1,10 +1,24 @@
-
 #include "stm32f4xx.h"
 #include "stm32f4_discovery.h"
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-void Delayullah(uint32_t t)	// runtime based counter function
+/* alternative counter (WIP)
+volatile uint32_t msTicks = 0;  // real-time milliseconds counter
+
+void sysTickHandler(void)
+{
+    msTicks++;  // increment every 1 ms
+}
+
+void Delay_ms(uint32_t ms)
+{
+    uint32_t start = msTicks;
+    while ((msTicks - start) < ms);
+}
+*/
+
+void userDefDelay(uint32_t t)	// runtime based counter
 {
     while (t--);
 }
@@ -16,13 +30,12 @@ void GPIO_Config(void)
 	    	User button is in Port A, at pin 0.
 	 */
 
-
 	//  LED part
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);   // Port D enabled
 
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_14;   // Initializing pins 12 and 14
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;   // pins 12 and 14 are now output
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // pulldown resistor mode
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;   // pins 12 and 14 are now set as output
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // pull down resistor mode
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   // frequency 50 MHz
 	GPIO_Init(GPIOD, &GPIO_InitStruct);
@@ -34,30 +47,30 @@ void GPIO_Config(void)
 
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;   // push button is at PA0
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;   // button is initialized as input
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // pull-down resistor for push-button
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;   // pull down resistor for push-button
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
 
-int state = 0;
+int state = 0;    // state machine is initially set at 0 (reset)
+
 int main(void)
 {
 	GPIO_Config();
-	GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);	// LEDs start in off state
-
+	GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);    // Although initialized at reset, LEDs again are set off, for good measure
 
 	/*
-	- Loop below works through 4 different states
+	- Loop below cycles through 4 different states
  	- Each state lights up the LEDS in different configuration and time length
-  	- States changed via built-in push button input
+  	- States switched through user button input
  	*/
 	
 	while (1)
 	{
 		if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)==1)
 		{
-			Delayullah(10000000);
+			userDefDelay(10000000);
 			state++;
 		}
 
@@ -69,16 +82,16 @@ int main(void)
 
 			case 1:
 				GPIO_SetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
-				Delayullah(1000000);
+				userDefDelay(100000000);
 				GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
-				Delayullah(1000000);
+				userDefDelay(100000000);
 				break;
 
 			case 2:
 				GPIO_SetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
-				Delayullah(1000000);
+				userDefDelay(50000000);
 				GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
-				Delayullah(1000000);
+				userDefDelay(50000000);
 				break;
 
 			case 3:
@@ -91,7 +104,6 @@ int main(void)
 			}
 		}
 	}
-
 
 
 void EVAL_AUDIO_TransferComplete_CallBack(uint32_t pBuffer, uint32_t Size){
