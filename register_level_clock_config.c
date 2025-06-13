@@ -9,7 +9,7 @@ void RCC_Config(void)
 {
 	RCC_DeInit();
 	// 1. Enabling HSE
-	RCC->CR |= 1<<16;	// HSEEN=1
+	RCC->CR |= 1<<16;		// HSEEN=1
 	while (!(RCC->CR & (1<<17)));	// Wait until HSE Ready Flag is set
 	
 	// 2. Enabling Peripheral Power and Voltage Regulator
@@ -25,30 +25,27 @@ void RCC_Config(void)
 	RCC->CFGR |= 0x4<<13;	// APB2=2
 
 	// 5. PLL Setting
-	RCC->PLLCFGR=0x24000000;	// initial reset
+	RCC->PLLCFGR=0x24000000;		// initial reset
 	RCC->PLLCFGR |= 4<<0 | 0xA8<<6 | 1<<22;	// PLLM=4, PLLN=168, PLLSRC enabled
-	RCC->PLLCFGR &= ~(3<<16);	// PLLP=2
+	RCC->PLLCFGR &= ~(3<<16);		// PLLP=2
 
 	// 6. Enabling PLL
-	RCC->CR |= (1<<24);	// PLLON enabled
+	RCC->CR |= (1<<24);		// PLLON enabled
 	while (!(RCC->CR & (1<<25)));	// wait until flag is 1
 
 	// 7. Selecting PLL as clock source
-	RCC->CFGR |= 2;   // selecting PLL as clock source
-	while (!(RCC->CFGR & (2<<2)));   // waiting until 2:3 bits become 0b10
-
-
-
+	RCC->CFGR |= 2;			 // selecting PLL as clock source
+	while (!(RCC->CFGR & (2<<2)));   // waiting until bits 2:3 become 0b10
 }
 
 int main(void)
 {
 	sysClkWatched=SystemCoreClock;
-	RCC_Config();	// Function call
+	RCC_Config();
 
-	/*
-	RCC_DeInit();   -> Disables HSE, enables internal clock (16MHz)
-	SystemCoreClockUpdate();	-> Clock is now 16 MHz
+	/* !! OPTIONAL !!
+	RCC_DeInit();  		  -> Disables HSE, enables internal clock (16MHz)
+	SystemCoreClockUpdate();  -> Clock is now 16 MHz
 	*/
 }
 
