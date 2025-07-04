@@ -40,13 +40,13 @@ int main(void)
 	GPIO_Config();
 	GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
 
-	// if button is pressed, LEDs in pin 12 & 14 light up
+	// when button is pressed, LEDs in pin 12 & 14 light up
 	while (1)
 	{
-			if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)==1)
-			GPIO_SetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
-			else if  (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)==0)
-			GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
+		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)==1)
+		GPIO_SetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
+		else if  (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)==0)
+		GPIO_ResetBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_14);
 	}
 }
 
