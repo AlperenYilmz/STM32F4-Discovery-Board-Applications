@@ -49,25 +49,12 @@ int main(void)
 	*/
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void EVAL_AUDIO_TransferComplete_CallBack(uint32_t pBuffer, uint32_t Size){
+void EVAL_AUDIO_TransferComplete_CallBack(uint32_t pBuffer, uint32_t Size)
+{
   /* TODO, implement your code here */
   return;
 }
+
 
 /*
  * Callback used by stm324xg_eval_audio_codec.c.
